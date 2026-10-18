@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>[hidden]{display:none!important}</style>
+<title>일진내정법</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Noto+Sans+KR:wght@400;500&display=swap">
+<style>
+/* 천원지방: 둘레 12칸 사각 판, 가운데는 오늘 일진, 아래는 내방 풀이 */
+:root{--bg:#F6F5F1;--card:#FFFFFF;--line:#DCD8CE;--fg:#24221E;--sub:#6B675E;--muted:#9A958A;--accent:#B5462A;--accent-fg:#FFFFFF;--good:#1F5F99;--bad:#A3302C;--now:#1F5F99;--pick:#B5462A;--soft:#EFECE5;
+--display:"Noto Serif KR","Nanum Myeongjo",serif;--body:"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1B1A18;--card:#25231F;--line:#3A3731;--fg:#ECE8DF;--sub:#AAA498;--muted:#7F7A70;--accent:#E07A5A;--accent-fg:#1B1A18;--good:#86B6E6;--bad:#EE928C;--now:#86B6E6;--pick:#E07A5A;--soft:#2E2B26;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1B1A18;--card:#25231F;--line:#3A3731;--fg:#ECE8DF;--sub:#AAA498;--muted:#7F7A70;--accent:#E07A5A;--accent-fg:#1B1A18;--good:#86B6E6;--bad:#EE928C;--now:#86B6E6;--pick:#E07A5A;--soft:#2E2B26;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);padding-block:20px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0;text-align:center;letter-spacing:.02em}
+h2{font-family:var(--display);font-weight:700;font-size:17px;margin:0}
+.bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--sub)}
+input[type=date],button,select{font:inherit;font-size:14px;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+button,select{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,.c:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bar label{display:flex;align-items:center;gap:4px}
+.pk{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;padding:6px;border:1px solid var(--line);border-radius:12px}
+.pk button{padding:6px 0;min-width:0;font-family:var(--display)}
+.pk button.on{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.g{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.c{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:7px 2px;text-align:center;min-height:98px;display:flex;flex-direction:column;justify-content:center;gap:1px;cursor:pointer;position:relative}
+.c.now{border:2px solid var(--now)}
+.c.si::after,.c.tti::before{position:absolute;top:3px;font-size:10px;line-height:1;padding:2px 4px;border-radius:4px;background:var(--pick);color:var(--accent-fg)}
+.c.si::after{content:"시";right:3px}.c.tti::before{content:"띠";left:3px}
+.n{font-size:11px;color:var(--sub)}
+.j{font-family:var(--display);font-size:23px;font-weight:700;line-height:1.2}
+.m{font-size:11px;letter-spacing:1px}.gd{color:var(--good)}.bd{color:var(--bad)}
+.t{font-size:11px;color:var(--muted);line-height:1.25;font-variant-numeric:tabular-nums}
+.ctr{grid-row:2/5;grid-column:2/5;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:12px;color:var(--sub);line-height:1.7}
+.ctr b{font-family:var(--display);font-size:24px;font-weight:700;color:var(--fg)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.sel{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sel label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub)}
+.sel select{width:100%}
+.res{display:flex;flex-direction:column;gap:6px;padding-top:10px;border-top:1px solid var(--line)}
+.res .hd{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.res .tag{font-size:11px;padding:2px 6px;border-radius:4px;background:var(--soft);color:var(--sub)}
+.res .nm{font-family:var(--display);font-size:16px;font-weight:700}
+.res p{margin:0;font-size:14px;line-height:1.65}
+.sel4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.sel4 label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub)}.sel4 select{width:100%;padding:6px 4px}
+.gr{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:6px 10px;align-items:baseline;font-size:14px;padding:8px 0;border-top:1px solid var(--line)}
+.gr .gn{font-size:12px;color:var(--sub)}.gr .gs{font-family:var(--display);font-weight:700}
+.gr.hit{background:var(--soft);border-radius:8px;padding:8px;border-top-color:transparent}
+.flag{font-size:11px;padding:1px 5px;border-radius:4px;background:var(--pick);color:var(--accent-fg);margin-left:4px}
+.rw{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;margin:0;font-size:14px;line-height:1.6}
+.rw dt{font-size:12px;color:var(--sub);padding-top:2px}.rw dd{margin:0}
+.res .grp{font-size:12px;color:var(--sub)}
+.hk{font-size:13px;line-height:1.6;background:var(--soft);border-radius:8px;padding:10px}
+.note{font-size:12px;color:var(--muted);text-align:center;line-height:1.6;margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>일진내정법</h1>
+<div class="bar"><button id="prev" aria-label="전날">◀</button><input type="date" id="dt" aria-label="날짜"><button id="next" aria-label="다음 날">▶</button><button id="today">오늘로 돌아가기</button></div>
+<div class="pk" id="pk"></div>
+<div class="g" id="g"><div class="ctr" id="ctr"></div></div>
+<section class="panel">
+<h2>내방 풀이</h2>
+<div class="sel"><label for="siSel">온 시간<select id="siSel"></select></label><label for="ttiSel">띠<select id="ttiSel"></select></label></div>
+<div id="out"></div>
+</section>
+<section class="panel">
+<h2>사주 지지로 보기</h2>
+<div class="sel4"><label for="p0">연지<select id="p0"></select></label><label for="p1">월지<select id="p1"></select></label><label for="p2">일지<select id="p2"></select></label><label for="p3">시지<select id="p3"></select></label></div>
+<div id="pout"></div>
+</section>
+<section class="panel">
+<h2>종합 풀이</h2>
+<div id="sum"></div>
+</section>
+<p class="note">일진을 장성으로 놓고 시계방향으로 돌립니다. 판의 칸을 누르면 그 시로 풀이합니다.<br>시는 지금의 전반적 상황, 띠는 이후 어떻게 할지를 봅니다. 초사언은 그 시간의 신궁으로 건네는 첫마디.<br>시간은 한국 기준(정시+30분). 일진은 자정 기준, 2000.1.1 戊午日부터 계산.</p>
+</div>
+<script>
+const G='甲乙丙丁戊己庚辛壬癸',J=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const K=['자','축','인','묘','진','사','오','미','신','유','술','해'];
+const A=['쥐','소','범','토끼','용','뱀','말','양','원숭이','닭','개','돼지'];
+const D=[['일진',5,1,'강일진','장성'],['천록',4,1,'소망','반안'],['사살신',4,0,'낙화','역마'],['합식',4,1,'목적','육해'],['기러기',4,0,'이탈','화개'],['공망신',2,0,'허공','겁살'],['약일충',4,0,'상충','재살'],['원진록',3,0,'양보','천살'],['해결신',3,1,'합신','지살'],['퇴식',3,0,'쇠퇴','년살'],['금조건',3,1,'조건부 이익','월살'],['백병주',5,0,'암살','망신']];
+const M=[
+['기가 모이는 귀한 자리','모든 것을 취할 수 있는, 어제의 내일인 오늘. 두 마음, 우왕좌왕 갈등','"이럴까 저럴까 두 마음"'],
+['새로운 것에 도전하고 싶은 마음','아직 미숙하고 힘이 부족하여 스트레스. 보살펴 줄 손길이 필요','"의욕이 넘치네" "말려도 하겠네"'],
+['탐욕과 질병으로 죽을 만큼 고통스러운 자리','성취되는 일도 없고 진행 중인 일도 중단','"정리하고 처리할 일이 있네" "놀라고 골치 아프겠다"'],
+['곳간이 차고, 복 받은 자리','온정을 베풀고 살맛 나는 상황. 일이 성사된다. 연애, 결혼을 할 수 있다','"경조사(경사)가 있겠다" "문서운이 있다"'],
+['분주하게 움직이거나 날아서 이동을 하는 때','날아갔다, 이루어지지 않는다. 이별, 수술, 교통사고. 이사·이동·매매는 이뤄진다','"이동수, 변동수가 있다" "매매를 하려 한다면 가능하다" (언제? 기러기 달에)'],
+['재물도 사람도 비어 있는 상황 (있다가 없어진)','빼앗기거나 사기당하거나 잃어버려 허망한 형국. 고독하다. 질병, 이별, 불의의 사고','"남 좋은 일, 헛고생만 했다" "지금은 쉴 때다"'],
+['힘이 빠지고, 다툼과 시비를 거듭하고 피해만 커지고 있는 상황','일이 성사되지 않는다. 구속 등 관재구설. 이별, 이사, 직업 변동. 눈치','"좌불안석이다" "남과 다툴 일이 생기겠다" "터부정이 들었으니 움직이는 것이 좋다"'],
+['훼방과 방해를 받으나, 아직 힘이 부족하니 불성사','시기·질투·원망 등으로 이별·이혼. 양보하고 물러서야. 예술, 예능의 특별한 재주','"방해자가 있다" "양보하는 게 좋다" "가까운 사람의 배신이 있다"'],
+['총명한 선신이 머물며 도와주는, 즐겁고 편안한 자리','합격. 작지만 문제를 풀어주는 열쇠를 얻는다','"실마리가 보인다" "조금만 참고 기다리면 귀인이 나타나 해결해 준다"'],
+['잔꾀를 부리다 오히려 자신의 발등을 찧는 형국','하기 싫고 되는대로. 상황이 점점 나쁜 쪽으로. 구설(여자 문제)','"매사 일이 꼬여 있어 답답한 상황이다" "여자로 인한 부정이 있다" "손재수, 관재구설"'],
+['일의 조건이 맞아서 착수','금전이나 사업 문제와 관련된. 문서에 서명날인. 고생 끝에 희망','"금전운이 있다" "조건이 맞으면 큰 이득이 발생"'],
+['능수능란하지만 힘이 소진되어 기진맥진한 상태','지긋지긋하게 꼴도 보기 싫다. 근심과 질병의 괴이한 액운. 일이 무산','"병란이 침투" "풍파가 심하다" "많이 배우고 똑똑한데 운이 막혔다"']];
+const P=[[1,3],[1,4],[2,5],[3,5],[4,5],[5,4],[5,3],[5,2],[4,1],[3,1],[2,1],[1,2]];
+const OH=['수','토','목','목','토','화','화','토','금','금','토','수'];
+const JA={'목':'ㄱ ㅋ','화':'ㄴ ㄷ ㄹ ㅌ','토':'ㅇ ㅎ','금':'ㅅ ㅈ ㅊ','수':'ㅁ ㅂ ㅍ'};
+const DIR=['북','북동','북동','동','남동','남동','남','남서','남서','서','북서','북서'];
+const SAENG=[8,5,2,11,8,5,2,11,8,5,2,11];
+const GN={2:'인오술',5:'사유축',8:'신자진',11:'해묘미'};
+function grp(day,k){const a=SAENG[day],b=SAENG[k],d=((b-a)%12+12)%12;return GN[b]+' · '+(d==0?'오늘의 주인공 (잘 나가는 중)':d==3?'어제의 주인공 (기운이 저무는 중)':d==9?'내일의 주인공 (운이 좋아지는 중)':'반대 그룹 (활동성 위축)')}
+function tm(k){const s=(23*60+30+k*120)%1440,e=(s+120)%1440,f=x=>String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0');return [f(s),f(e)]}
+function kstNow(){const n=new Date(Date.now()+9*3600000);return {y:n.getUTCFullYear(),m:n.getUTCMonth(),d:n.getUTCDate(),min:n.getUTCHours()*60+n.getUTCMinutes()}}
+function nowBranch(){return Math.floor(((kstNow().min-1410+1440)%1440)/120)}
+function gz(y,m,d){const days=Math.round((Date.UTC(y,m,d)-Date.UTC(2000,0,1))/86400000);return ((54+days)%60+60)%60}
+const g=document.getElementById('g'),pk=document.getElementById('pk'),dt=document.getElementById('dt'),siSel=document.getElementById('siSel'),ttiSel=document.getElementById('ttiSel');
+for(let k=0;k<12;k++){const t=tm(k);siSel.add(new Option(K[k]+'시 '+t[0]+'~'+t[1],k))}
+ttiSel.add(new Option('선택 안 함',''));for(let k=0;k<12;k++)ttiSel.add(new Option(A[k]+'띠 ('+J[k]+')',k));
+siSel.value=nowBranch();
+let cur=0,gi=0,manual=false;
+const cells=D.map((d,i)=>{const e=document.createElement('div');e.className='c';e.tabIndex=0;e.style.gridRow=P[i][0];e.style.gridColumn=P[i][1];e.innerHTML='<div class="n">'+d[0]+'</div><div class="j"></div><div class="m '+(d[2]?'gd':'bd')+'">'+(d[2]?'★':'X').repeat(d[1])+'</div><div class="t"></div>';const pick=()=>{siSel.value=(cur+i)%12;draw()};e.onclick=pick;e.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();pick()}};g.appendChild(e);return e});
+const order=[2,3,4,5,6,7,8,9,10,11,0,1];
+const btns=order.map(k=>{const b=document.createElement('button');b.textContent=J[k]+'日';b.onclick=()=>{cur=k;manual=true;draw()};pk.appendChild(b);return [b,k]});
+function setToday(){const n=kstNow();const dd=new Date(Date.UTC(n.y,n.m,n.d));dt.value=dd.toISOString().slice(0,10);fromDate()}
+function fromDate(){if(!dt.value)return;const [y,m,d]=dt.value.split('-').map(Number);gi=gz(y,m-1,d);cur=gi%12;manual=false;draw()}
+function block(label,k,extra){const i=((k-cur)%12+12)%12,d=D[i];return '<div class="res"><div class="hd"><span class="tag">'+label+'</span><span class="nm">'+J[k]+' · '+d[0]+'</span><span class="m '+(d[2]?'gd':'bd')+'">'+(d[2]?'★':'X').repeat(d[1])+'</span></div><div class="grp">'+d[3]+' · '+d[4]+'자리 · '+grp(cur,k)+'</div><dl class="rw"><dt>자리</dt><dd>'+M[i][0]+'</dd><dt>특성</dt><dd>'+M[i][1]+'</dd><dt>초사언</dt><dd>'+M[i][2]+'</dd></dl>'+(extra||'')+'</div>'}
+function draw(){const nowK=nowBranch(),si=+siSel.value,tt=ttiSel.value===''?-1:+ttiSel.value;
+cells.forEach((e,i)=>{const k=(cur+i)%12,t=tm(k);e.querySelector('.j').textContent=J[k];e.querySelector('.t').innerHTML=t[0]+'<br>~'+t[1];e.classList.toggle('now',k==nowK);e.classList.toggle('si',k==si);e.classList.toggle('tti',k==tt)});
+btns.forEach(([b,k])=>b.classList.toggle('on',k==cur));
+const nn=kstNow();document.getElementById('today').hidden=!manual&&dt.value===new Date(Date.UTC(nn.y,nn.m,nn.d)).toISOString().slice(0,10);
+const t=tm(nowK),dayName=manual?J[cur]+'日':G[gi%10]+J[gi%12]+'日';
+document.getElementById('ctr').innerHTML=(manual?'<span>직접 선택</span>':'<span>'+dt.value+'</span>')+'<b>'+dayName+'</b><span>지금 '+K[nowK]+'시 '+t[0]+'~'+t[1]+'</span>';
+const hk=(cur+8)%12,oh=OH[hk];
+let html='<p class="grp" style="margin:0">'+dayName+' '+K[si]+'시'+(tt>=0?'에 '+A[tt]+'띠가':'에')+' 왔을 때</p>';
+html+=block('시 · 지금 상황',si);
+if(tt>=0)html+=block('띠 · 이후 방향',tt);
+html+='<div class="hk"><b>해결신 '+J[hk]+'('+K[hk]+')</b> · '+oh+'<br>해결 시기: '+K[hk]+'시 / '+K[hk]+'월 / '+K[hk]+'년<br>방향: '+DIR[hk]+' · 첫 자음: '+JA[oh]+'</div>';
+document.getElementById('out').innerHTML=html;drawP()}
+const GUNG=[['연지','선산·조상·부모·토지'],['월지','직장·가정·형제·집'],['일지','배우자·연인·이성친구·몸'],['시지','사업체·점포·자식·종업원']];
+const PS=[0,1,2,3].map(n=>{const s=document.getElementById('p'+n);s.add(new Option('-',''));for(let k=0;k<12;k++)s.add(new Option(J[k]+' '+K[k],k));s.onchange=drawP;return s});
+function drawP(){const v=PS.map(s=>s.value===''?-1:+s.value);if(v.every(x=>x<0)){document.getElementById('pout').innerHTML='<p class="grp" style="margin:0">상담자 사주의 지지를 고르면 각 궁이 오늘 판의 어느 신궁에 걸리는지 보여줍니다.</p>';drawSum();return}
+const idx=v.map(k=>k<0?-1:((k-cur)%12+12)%12);
+let pri=idx.map((i,n)=>i==2||i==11?n:-1).filter(n=>n>=0),lvl=1;
+if(!pri.length){pri=idx.map((i,n)=>i==4||i==6?n:-1).filter(n=>n>=0);lvl=2}
+let h='';v.forEach((k,n)=>{if(k<0)return;const i=idx[n],d=D[i],hit=pri.includes(n);h+='<div class="gr'+(hit?' hit':'')+'"><span class="gn">'+GUNG[n][0]+' '+J[k]+'</span><span class="gs">'+d[0]+' <span class="m '+(d[2]?'gd':'bd')+'">'+(d[2]?'★':'X').repeat(d[1])+'</span>'+(hit?'<span class="flag">먼저 볼 궁</span>':'')+'</span><span>'+GUNG[n][1]+' · '+M[i][1]+'</span></div>'});
+h+='<p class="grp" style="margin:6px 0 0">'+(pri.length?(lvl==1?'사살신·백병주가 걸린 ':'사살신·백병주가 없어 기러기·약일충이 걸린 ')+pri.map(n=>GUNG[n][0]).join('·')+'의 문제를 방문 목적으로 먼저 봅니다.':'사살신·백병주·기러기·약일충에 걸린 궁이 없습니다.')+'</p>';
+document.getElementById('pout').innerHTML=h;drawSum()}
+const Q=['할까 말까 고민 중인 일이 있으세요?','새로 시작하고 싶은 일이 있으세요?','정리하고 처리해야 할 일이 생기셨죠?','좋은 소식이나 성사될 일이 있으세요?','이동하거나 떠나보낼 일이 있으세요?','헛고생했다 싶은 일이 있으세요?','다툼이나 변동 때문에 불안하시죠?','방해하는 사람이 있거나 양보해야 하는 상황이세요?','풀릴 실마리가 보이는 일이 있으세요?','일이 자꾸 꼬여서 답답하시죠?','조건이나 계약을 따져 보고 계세요?','많이 지치셨죠? 애쓴 만큼 안 풀리고요.'];
+const AREA=['부모·조상·토지','가정·직장·집','배우자·몸','하는 일·자식'];
+function drawSum(){const si=+siSel.value,v=PS.map(s=>s.value===''?-1:+s.value);const tt=ttiSel.value!==''?+ttiSel.value:v[0];
+const ix=k=>((k-cur)%12+12)%12,si_i=ix(si);
+let h='<div class="res"><div class="hd"><span class="tag">첫마디</span><span class="nm">'+K[si]+'시 · '+D[si_i][0]+'</span></div><p>'+M[si_i][2]+'</p></div>';
+if(v.some(x=>x>=0)){const idx=v.map(k=>k<0?-1:ix(k));let pri=idx.map((i,n)=>i==2||i==11?n:-1).filter(n=>n>=0);if(!pri.length)pri=idx.map((i,n)=>i==4||i==6?n:-1).filter(n=>n>=0);
+const ord=[...pri,...[0,1,2,3].filter(n=>v[n]>=0&&!pri.includes(n)).sort((a,b)=>D[idx[b]][1]-D[idx[a]][1])];
+h+='<div class="res"><div class="hd"><span class="tag">짚어볼 순서</span></div><dl class="rw">'+ord.map(n=>{const i=idx[n];return '<dt>'+GUNG[n][0]+'</dt><dd><b>'+D[i][0]+'</b>'+(pri.includes(n)?'<span class="flag">먼저</span>':'')+' · '+AREA[n]+' 쪽<br>"'+Q[i]+'"</dd>'}).join('')+'</dl></div>'}
+if(tt>=0){const t_i=ix(tt);h+='<div class="res"><div class="hd"><span class="tag">띠 · 앞으로</span><span class="nm">'+A[tt]+'띠 · '+D[t_i][0]+'</span></div><p>'+M[t_i][1]+'</p><div class="grp">'+grp(cur,tt)+'</div></div>'}
+const hk=(cur+8)%12,oh=OH[hk];h+='<div class="hk"><b>해결 방향</b> · 해결신 '+J[hk]+'<br>'+K[hk]+'시·'+K[hk]+'월에 실마리, 방향 '+DIR[hk]+', 도움 주는 이름 첫 자음 '+JA[oh]+'<br>"'+M[8][2].replace(/"/g,'').trim()+'"</div>';
+h+='<p class="grp" style="margin:0">가설은 질문으로 던져 확인한 뒤 명리 풀이로 넘어갑니다.</p>';
+document.getElementById('sum').innerHTML=h}
+dt.addEventListener('change',fromDate);dt.addEventListener('input',fromDate);dt.addEventListener('blur',fromDate);
+function shift(n){if(!dt.value)return setToday();const [y,m,d]=dt.value.split('-').map(Number);dt.value=new Date(Date.UTC(y,m-1,d+n)).toISOString().slice(0,10);fromDate()}
+document.getElementById('prev').onclick=()=>shift(-1);document.getElementById('next').onclick=()=>shift(1);document.getElementById('today').onclick=()=>{siSel.value=nowBranch();setToday()};siSel.onchange=draw;ttiSel.onchange=draw;
+setToday();setInterval(draw,60000);
+</script>
+</body>
+</html>
