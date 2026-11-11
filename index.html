@@ -69,7 +69,7 @@ button,select{cursor:pointer}button:focus-visible,input:focus-visible,select:foc
 </section>
 <section class="panel">
 <h2>사주 지지로 보기</h2>
-<div class="sel4"><label for="p0">연지<select id="p0"></select></label><label for="p1">월지<select id="p1"></select></label><label for="p2">일지<select id="p2"></select></label><label for="p3">시지<select id="p3"></select></label></div>
+<div class="sel4"><label for="p3">시지<select id="p3"></select></label><label for="p2">일지<select id="p2"></select></label><label for="p1">월지<select id="p1"></select></label><label for="p0">연지<select id="p0"></select></label></div>
 <div id="pout"></div>
 </section>
 <section class="panel">
@@ -136,8 +136,8 @@ function drawP(){const v=PS.map(s=>s.value===''?-1:+s.value);if(v.every(x=>x<0))
 const idx=v.map(k=>k<0?-1:((k-cur)%12+12)%12);
 let pri=idx.map((i,n)=>i==2||i==11?n:-1).filter(n=>n>=0),lvl=1;
 if(!pri.length){pri=idx.map((i,n)=>i==4||i==6?n:-1).filter(n=>n>=0);lvl=2}
-let h='';v.forEach((k,n)=>{if(k<0)return;const i=idx[n],d=D[i],hit=pri.includes(n);h+='<div class="gr'+(hit?' hit':'')+'"><span class="gn">'+GUNG[n][0]+' '+J[k]+'</span><span class="gs">'+d[0]+' <span class="m '+(d[2]?'gd':'bd')+'">'+(d[2]?'★':'X').repeat(d[1])+'</span>'+(hit?'<span class="flag">먼저 볼 궁</span>':'')+'</span><span>'+GUNG[n][1]+' · '+M[i][1]+'</span></div>'});
-h+='<p class="grp" style="margin:6px 0 0">'+(pri.length?(lvl==1?'사살신·백병주가 걸린 ':'사살신·백병주가 없어 기러기·약일충이 걸린 ')+pri.map(n=>GUNG[n][0]).join('·')+'의 문제를 방문 목적으로 먼저 봅니다.':'사살신·백병주·기러기·약일충에 걸린 궁이 없습니다.')+'</p>';
+let h='';[3,2,1,0].forEach(n=>{const k=v[n];if(k<0)return;const i=idx[n],d=D[i],hit=pri.includes(n);h+='<div class="gr'+(hit?' hit':'')+'"><span class="gn">'+GUNG[n][0]+' '+J[k]+'</span><span class="gs">'+d[0]+' <span class="m '+(d[2]?'gd':'bd')+'">'+(d[2]?'★':'X').repeat(d[1])+'</span>'+(hit?'<span class="flag">먼저 볼 궁</span>':'')+'</span><span>'+GUNG[n][1]+' · '+M[i][1]+'</span></div>'});
+h+='<p class="grp" style="margin:6px 0 0">'+(pri.length?(lvl==1?'사살신·백병주가 걸린 ':'사살신·백병주가 없어 기러기·약일충이 걸린 ')+[...pri].reverse().map(n=>GUNG[n][0]).join('·')+'의 문제를 방문 목적으로 먼저 봅니다.':'사살신·백병주·기러기·약일충에 걸린 궁이 없습니다.')+'</p>';
 document.getElementById('pout').innerHTML=h;drawSum()}
 const Q=['할까 말까 고민 중인 일이 있으세요?','새로 시작하고 싶은 일이 있으세요?','정리하고 처리해야 할 일이 생기셨죠?','좋은 소식이나 성사될 일이 있으세요?','이동하거나 떠나보낼 일이 있으세요?','헛고생했다 싶은 일이 있으세요?','다툼이나 변동 때문에 불안하시죠?','방해하는 사람이 있거나 양보해야 하는 상황이세요?','풀릴 실마리가 보이는 일이 있으세요?','일이 자꾸 꼬여서 답답하시죠?','조건이나 계약을 따져 보고 계세요?','많이 지치셨죠? 애쓴 만큼 안 풀리고요.'];
 const AREA=['부모·조상·토지','가정·직장·집','배우자·몸','하는 일·자식'];
